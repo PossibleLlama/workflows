@@ -64,6 +64,7 @@ jobs:
     - name: Store binaries
       uses: actions/upload-artifact@v3
       with:
+        name: Binaries
         path: ./${{ github.repository }}.*
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}

@@ -16,6 +16,11 @@ on:
         default: 10
         type: number
         description: "Number of times to run each test"
+      retention-days:
+        required: false
+        default: 2
+        type: number
+        description: "Number of days to keep the test results in the artifact store"
 
 jobs:
   test-small-correctness:
@@ -39,11 +44,11 @@ jobs:
 
     - name: Store test reports
       uses: actions/upload-artifact@v3
-      if: always()
+      if: !cancelled()
       with:
         name: Test small reports
         path: |
           ./correctness-tests.xml
           ./correctness-tests-coverage.out
         if-no-files-found: ignore
-        retention-days: 2
+        retention-days: ${{ inputs.retention-days }}
