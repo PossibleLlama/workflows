@@ -1,0 +1,49 @@
+on:
+  workflow_call:
+    inputs:
+      mod-path:
+        required: false
+        default: "./go.mod"
+        type: string
+        description: "Path to the go.mod file, by default it is assumed to be in the root of the repository"
+      test-path:
+        required: false
+        default: "./..."
+        type: string
+        description: "Path to the tests to run, by default all tests are run"
+      test-count:
+        required: false
+        default: 10
+        type: number
+        description: "Number of times to run each test"
+
+jobs:
+  test-small-correctness:
+    name: Small Tests - Correctness
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout code into the Go module directory
+      uses: actions/checkout@v4
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: ${{ inputs.mod-path }}
+
+    - name: Get dependencies
+      run: go mod download && go install gotest.tools/gotestsum@latest
+
+    - name: Correctness tests
+      run: gotestsum --packages=${{ inputs.test-path }} --junitfile="./correctness-tests.xml" -- -coverprofile="./correctness-tests-coverage.out" -count=${{ inputs.test-count }} -race
+
+    - name: Store test reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: Test small reports
+        path: |
+          ./correctness-tests.xml
+          ./correctness-tests-coverage.out
+        if-no-files-found: ignore
+        retention-days: 2
