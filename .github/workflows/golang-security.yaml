@@ -6,11 +6,6 @@ on:
         default: "./go.mod"
         type: string
         description: "Path to the go.mod file, by default it is assumed to be in the root of the repository"
-      source-path:
-        required: false
-        default: "./main.go"
-        type: string
-        description: "Path to the source file containing the main function, by default it is assumed to be in the root of the repository"
       upload-sarif:
         required: false
         default: true
@@ -38,7 +33,7 @@ jobs:
     - name: Govulncheck
       uses: golang/govulncheck-action@v1
       with:
-        go-package: ${{ inputs.source-path }}
+        go-package: ./...
 
   SAST:
     name: SAST
@@ -60,6 +55,6 @@ jobs:
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && inputs.upload-sarif }}
         with:
           sarif_file: gosec.sarif
