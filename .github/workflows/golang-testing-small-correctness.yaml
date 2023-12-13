@@ -44,7 +44,7 @@ jobs:
 
     - name: Store test reports
       uses: actions/upload-artifact@v3
-      if: !cancelled()
+      if: ${{ !cancelled() }}
       with:
         name: Test small reports
         path: |
