@@ -16,11 +16,17 @@ on:
         default: "-ldflags=\"-w -s\""
         type: string
         description: "Flags to be passed to the build process"
+    outputs:
+      binary:
+        description: "Path to the binary file"
+        value: ${{ jobs.binary.outputs.binary_path }}
 
 jobs:
   binary:
     name: Binary
     runs-on: ubuntu-latest
+    outputs:
+      binary_path: ${{ steps.bin-ouput.outputs.binary_path }}
     steps:
 
     - name: Checkout code into the Go module directory
@@ -36,3 +42,7 @@ jobs:
 
     - name: Build
       run: go build ${{ inputs.build-flags }} -o "./${{ github.repository }}.bin" ${{ inputs.source-path }}
+
+    - name: Output binary path
+      id: bin-ouput
+      run: echo "binary_path=${{ github.repository }}.bin" >> $GITHUB_OUTPUT
