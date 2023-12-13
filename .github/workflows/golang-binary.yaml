@@ -1,0 +1,38 @@
+on:
+  workflow_call:
+    inputs:
+      mod-path:
+        required: false
+        default: "./go.mod"
+        type: string
+        description: "Path to the go.mod file, by default it is assumed to be in the root of the repository"
+      source-path:
+        required: false
+        default: "./main.go"
+        type: string
+        description: "Path to the source file containing the main function, by default it is assumed to be in the root of the repository"
+      build-flags:
+        required: false
+        default: "-ldflags=\"-w -s\""
+        type: string
+        description: "Flags to be passed to the build process"
+
+jobs:
+  binary:
+    name: Binary
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout code into the Go module directory
+      uses: actions/checkout@v4
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: ${{ inputs.mod-path }}
+
+    - name: Get dependencies
+      run: go mod download
+
+    - name: Build
+      run: go build ${{ inputs.build-flags }} -o "./${{ github.repository }}.bin" ${{ inputs.source-path }}
