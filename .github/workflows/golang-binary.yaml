@@ -56,7 +56,7 @@ jobs:
       run: go mod download
 
     - name: Build
-      run: go build ${{ inputs.build-flags }} -o "./${{ github.repository }}.${{ (inputs.os == 'windows' && 'exe') || 'bin' }}" ${{ inputs.source-path }}
+      run: go build ${{ inputs.build-flags }} -o "./${{ github.repository }}-${{ inputs.os }}-${{ inputs.arch }}.${{ (inputs.os == 'windows' && 'exe') || 'bin' }}" ${{ inputs.source-path }}
       env:
         GOOS: ${{ inputs.os }}
         GOARCH: ${{ inputs.arch }}
@@ -70,4 +70,4 @@ jobs:
 
     - name: Output binary path
       id: bin-ouput
-      run: echo "binary_path=${{ github.repository }}.${{ (inputs.os == 'windows' && 'exe') || 'bin' }}" >> $GITHUB_OUTPUT
+      run: echo "binary_path=${{ github.repository }}-${{ inputs.os }}-${{ inputs.arch }}.${{ (inputs.os == 'windows' && 'exe') || 'bin' }}" >> $GITHUB_OUTPUT
