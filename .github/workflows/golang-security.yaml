@@ -8,9 +8,9 @@ on:
         description: "Path to the go.mod file, by default it is assumed to be in the root of the repository"
       upload-sarif:
         required: false
-        default: true
+        default: false
         type: boolean
-        description: "Upload SARIF file to GitHub Security tab, by default it is assumed to be true"
+        description: "Upload SARIF file to GitHub Security tab, by default it is false. When setting to true it requires write access to the security-events permission (see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions)"
 
 jobs:
   SCA:
