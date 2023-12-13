@@ -16,6 +16,16 @@ on:
         default: "-ldflags=\"-w -s\""
         type: string
         description: "Flags to be passed to the build process"
+      os:
+        required: false
+        default: "linux"
+        type: string
+        description: "Target OS"
+      arch:
+        required: false
+        default: "amd64"
+        type: string
+        description: "Target architecture"
     outputs:
       binary:
         description: "Path to the binary file"
@@ -42,6 +52,9 @@ jobs:
 
     - name: Build
       run: go build ${{ inputs.build-flags }} -o "./${{ github.repository }}.bin" ${{ inputs.source-path }}
+      env:
+        GOOS: ${{ inputs.os }}
+        GOARCH: ${{ inputs.arch }}
 
     - name: Output binary path
       id: bin-ouput
