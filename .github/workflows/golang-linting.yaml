@@ -46,7 +46,7 @@ jobs:
 
     - name: Store linting report
       uses: actions/upload-artifact@v3
-      if: always()
+      if: ${{ !cancelled() }}
       with:
         name: Linting report
         path: ./lint.out
