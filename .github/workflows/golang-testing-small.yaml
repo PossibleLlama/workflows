@@ -59,7 +59,7 @@ jobs:
       run: gotestsum --packages=${{ inputs.test-path }} --junitfile="./correctness-tests.xml" -- -coverprofile="./correctness-tests-coverage.out" -count=${{ inputs.test-count }} -race
 
     - name: Store test reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: Test small reports
@@ -91,7 +91,7 @@ jobs:
       run: go test -bench="." -count=${{ inputs.test-count }} ${{ inputs.test-path }} > ./performance-tests.txt
 
     - name: Store test reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: Test small reports

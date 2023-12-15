@@ -45,7 +45,7 @@ jobs:
         args: --issues-exit-code=0 --out-format checkstyle -v ${{ inputs.source-path }} > ./lint.out
 
     - name: Store linting report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: Linting report
