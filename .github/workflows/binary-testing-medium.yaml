@@ -1,0 +1,52 @@
+# This uses commander https://github.com/commander-cli/commander
+# to run the tests from a given directory against your binary.
+# It is assumed that the binary is built and uploaded as an artifact,
+# with that artifact name being passed to this workflow as an input.
+
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        required: true
+        type: string
+        description: "Name of the binary artifact to download using the download-artifact action"
+      bin-name:
+        required: false
+        default: ${{ inputs.artifact-name }}
+        type: string
+        description: "Name of the binary to be executed, defaults to the artifact name"
+      test-dir:
+        required: true
+        type: string
+        description: "Path to the directory containing tests"
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download binary
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ./app
+
+    - name: Setup binary
+      run: |
+        sudo mv ./app /usr/local/bin/${{ inputs.bin-name }}
+        sudo chmod +x /usr/local/bin/${{ inputs.bin-name }}
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v5
+      with:
+        go-version: 'stable'
+
+    - name: Install commander
+      run: go install github.com/commander-cli/commander/v2/cmd/commander@latest
+
+    - name: Correctness tests
+      run: commander test --dir ${{ inputs.test-dir }}
