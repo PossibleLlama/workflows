@@ -37,8 +37,8 @@ jobs:
 
     - name: Setup binary
       run: |
-        sudo mv ./app /usr/local/bin/${{ inputs.bin-name }}
-        sudo chmod +x /usr/local/bin/${{ inputs.bin-name }}
+        sudo mv ./app $RUNNER_WORKSPACE/bin/${{ inputs.bin-name }}
+        sudo chmod +x $RUNNER_WORKSPACE/bin/${{ inputs.bin-name }}
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
