@@ -44,7 +44,7 @@ jobs:
     if: ${{ inputs.enable-correctness }}
     steps:
 
-    - name: Checkout code into the Go module directory
+    - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Set up Go 1.x
@@ -75,7 +75,7 @@ jobs:
     if: ${{ inputs.enable-performance }}
     steps:
 
-    - name: Check out code into the Go module directory
+    - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Set up Go 1.x
@@ -105,7 +105,7 @@ jobs:
     if: ${{ inputs.enable-fuzz }}
     steps:
 
-    - name: Check out code into the Go module directory
+    - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Set up Go 1.x
