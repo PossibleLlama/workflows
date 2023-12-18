@@ -41,9 +41,8 @@ jobs:
 
     - name: Setup binary
       run: |
-        ls -la ./app
-        sudo mv ./app/${{ inputs.artifact-file }} ${{ inputs.test-dir }}/${{ inputs.bin-name }}
-        sudo chmod +x ${{ inputs.test-dir }}/${{ inputs.bin-name }}
+        sudo mv ./app/${{ inputs.artifact-file }} /usr/local/bin/${{ inputs.bin-name }}
+        sudo chmod +x /usr/local/bin/${{ inputs.bin-name }}
 
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
