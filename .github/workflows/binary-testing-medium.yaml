@@ -21,8 +21,8 @@ on:
         description: "Path to the directory containing tests"
 
 jobs:
-  test:
-    name: Test
+  test-medium-correctness:
+    name: Medium Tests - Correctness
     runs-on: ubuntu-latest
     steps:
 
