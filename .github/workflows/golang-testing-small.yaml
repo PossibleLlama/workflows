@@ -62,7 +62,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: Test small reports
+        name: Test small reports - Correctness
         path: |
           ./correctness-tests.xml
           ./correctness-tests-coverage.out
@@ -94,7 +94,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: Test small reports
+        name: Test small reports - Performance
         path: ./performance-tests.txt
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
