@@ -10,11 +10,15 @@ on:
         required: true
         type: string
         description: "Name of the binary artifact to download using the download-artifact action"
+      artifact-file:
+        required: true
+        type: string
+        description: "Name of the binary downloaded from the artifact"
       bin-name:
         required: false
-        default: ${{ inputs.artifact-name }}
+        default: ${{ inputs.artifact-file }}
         type: string
-        description: "Name of the binary to be executed, defaults to the artifact name"
+        description: "Name of the binary to be executed, defaults to the artifact file"
       test-dir:
         required: true
         type: string
@@ -37,7 +41,8 @@ jobs:
 
     - name: Setup binary
       run: |
-        sudo mv ./app ${{ inputs.test-dir }}/${{ inputs.bin-name }}
+        ls -la ./app
+        sudo mv ./app/${{ inputs.artifact-file }} ${{ inputs.test-dir }}/${{ inputs.bin-name }}
         sudo chmod +x ${{ inputs.test-dir }}/${{ inputs.bin-name }}
 
     - name: Set up Go 1.x
