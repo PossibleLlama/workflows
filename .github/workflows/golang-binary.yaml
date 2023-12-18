@@ -31,17 +31,16 @@ on:
         default: "amd64"
         type: string
         description: "Target architecture"
-    outputs:
-      binary:
-        description: "Path to the binary file"
-        value: ${{ jobs.binary.outputs.binary_path }}
+      binary-prefix:
+        required: false
+        default: "Binaries-"
+        type: string
+        description: "Prefix for the binary name"
 
 jobs:
   binary:
     name: Binary
     runs-on: ubuntu-latest
-    outputs:
-      binary_path: ${{ steps.bin-ouput.outputs.binary_path }}
     steps:
 
     - name: Checkout code into the Go module directory
@@ -64,11 +63,7 @@ jobs:
     - name: Store binaries
       uses: actions/upload-artifact@v4
       with:
-        name: Binaries-${{ inputs.os }}-${{ inputs.arch }}
+        name: ${{ inputs.binary-prefix }}${{ inputs.os }}-${{ inputs.arch }}
         path: ./${{ github.repository }}*
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
-
-    - name: Output binary path
-      id: bin-ouput
-      run: echo "binary_path=${{ github.repository }}-${{ inputs.os }}-${{ inputs.arch }}.${{ (inputs.os == 'windows' && 'exe') || 'bin' }}" >> $GITHUB_OUTPUT
