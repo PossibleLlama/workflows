@@ -82,7 +82,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Login to AWS
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         if: ${{ !cancelled() && inputs.login-aws }}
         with:
           aws-access-key-id: ${{ inputs.aws-access-key-id }}
