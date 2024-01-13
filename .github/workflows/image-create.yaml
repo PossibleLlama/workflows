@@ -1,0 +1,128 @@
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        required: false
+        default: ""
+        type: string
+        description: "Name of the image, by default it is empty. If not set, will use repository name"
+      image-tag:
+        required: false
+        default: ""
+        type: string
+        description: "Tag to assign, by default it is empty. If not set, will use the commit sha"
+      image-labels:
+        required: false
+        default: ""
+        type: string
+        description: "Labels to add to the image, by default it is empty"
+      image-build-args:
+        required: false
+        default: ""
+        type: string
+        description: "Build arguments to pass to the image, by default it is empty"
+      image-platforms:
+        required: false
+        default: "linux/amd64,linux/arm/v7"
+        type: string
+        description: "Platforms to build for, by default linux/amd64,linux/arm/v7"
+      login-aws:
+        required: false
+        default: false
+        type: boolean
+        description: "Login to AWS ECR, by default it is false. If true, expects aws-region, aws-access-key-id and aws-secret-access-key to be set"
+      aws-region:
+        required: false
+        default: ""
+        type: string
+        description: "AWS region to use for ECR login"
+      aws-access-key-id:
+        required: false
+        default: ""
+        type: string
+        description: "AWS access key ID to use for ECR login"
+      aws-secret-access-key:
+        required: false
+        default: ""
+        type: string
+        description: "AWS secret access key to use for ECR login"
+      login-ghcr:
+        required: false
+        default: false
+        type: boolean
+        description: "Login to GitHub Container Registry, by default it is false"
+      ghcr-username:
+        required: false
+        default: ""
+        type: string
+        description: "GitHub Container Registry username to use for login"
+      ghcr-token:
+        required: false
+        default: ""
+        type: string
+        description: "GitHub Container Registry token to use for login"
+
+jobs:
+  Create:
+    name: Create container image
+    runs-on: ubuntu-latest
+    if: ${{ inputs.login-aws || inputs.login-ghcr }}
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ !cancelled() && inputs.login-aws }}
+        with:
+          aws-access-key-id: ${{ inputs.aws-access-key-id }}
+          aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: Login to AWS ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        if: ${{ !cancelled() && inputs.login-aws }}
+        with:
+          mask-password: "true"
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        if: ${{ !cancelled() && inputs.login-ghcr }}
+        with:
+          registry: ghcr.io
+          username: ${{ inputs.ghcr-username }}
+          password: ${{ inputs.ghcr-token }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          install: true
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            inputs.image-name,enable=${{ !cancelled() && inputs.image-name != '' }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }},enable=${{ !cancelled() && inputs.login-aws && inputs.image-name == '' }}
+            ghcr.io/${{ github.repository }}-${{ github.event.pull_request.head.ref }},enable=${{ !cancelled() && inputs.login-ghcr && inputs.image-name == '' }}
+          tags: |
+            type=raw,value=${{ inputs.image-tag }},enable=${{ !cancelled() && inputs.image-tag != '' }}
+            type=sha,format=long,enable=${{ !cancelled() && inputs.image-tag == '' }}
+          labels: |
+            ${{ inputs.image-labels }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: ${{ !cancelled() }}
+          platforms: ${{ inputs.image_platforms }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            ${{ inputs.image-build-args }}
