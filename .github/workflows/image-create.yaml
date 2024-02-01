@@ -41,16 +41,6 @@ on:
         default: ""
         type: string
         description: "AWS region to use for ECR login"
-      aws-access-key-id:
-        required: false
-        default: ""
-        type: string
-        description: "AWS access key ID to use for ECR login"
-      aws-secret-access-key:
-        required: false
-        default: ""
-        type: string
-        description: "AWS secret access key to use for ECR login"
       login-ghcr:
         required: false
         default: false
@@ -61,10 +51,15 @@ on:
         default: ""
         type: string
         description: "GitHub Container Registry username to use for login"
+    secrets:
+      aws-access-key-id:
+        required: false
+        description: "AWS access key ID to use for ECR login"
+      aws-secret-access-key:
+        required: false
+        description: "AWS secret access key to use for ECR login"
       ghcr-token:
         required: false
-        default: ""
-        type: string
         description: "GitHub Container Registry token to use for login"
 
 jobs:
@@ -81,8 +76,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         if: ${{ !cancelled() && inputs.login-aws }}
         with:
-          aws-access-key-id: ${{ inputs.aws-access-key-id }}
-          aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
           aws-region: ${{ inputs.aws-region }}
 
       - name: Login to AWS ECR
@@ -98,7 +93,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ inputs.ghcr-username }}
-          password: ${{ inputs.ghcr-token }}
+          password: ${{ secrets.ghcr-token }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -127,7 +122,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: ${{ !cancelled() }}
-          platforms: ${{ inputs.image_platforms }}
+          platforms: ${{ inputs.image-platforms }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
