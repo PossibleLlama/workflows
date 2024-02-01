@@ -26,6 +26,11 @@ on:
         default: "linux/amd64,linux/arm/v7"
         type: string
         description: "Platforms to build for, by default linux/amd64,linux/arm/v7"
+      image-upload:
+        required: false
+        default: false
+        type: boolean
+        description: "Push the image to the registry, by default it is false"
       login-aws:
         required: false
         default: false
@@ -109,19 +114,19 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            inputs.image-name,enable=${{ !cancelled() && inputs.image-name != '' }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.aws-registry }},enable=${{ !cancelled() && inputs.login-aws && inputs.image-name == '' && inputs.aws-registry != '' }}
-            ghcr.io/${{ github.repository }}-${{ github.event.pull_request.head.ref }},enable=${{ !cancelled() && inputs.login-ghcr && inputs.image-name == '' }}
+            inputs.image-name,enable=${{ inputs.image-name != '' }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.aws-registry }},enable=${{ inputs.login-aws && inputs.image-name == '' && inputs.aws-registry != '' }}
+            ghcr.io/${{ github.repository }}-${{ github.event.pull_request.head.ref }},enable=${{ inputs.login-ghcr && inputs.image-name == '' }}
           tags: |
-            type=raw,value=${{ inputs.image-tag }},enable=${{ !cancelled() && inputs.image-tag != '' }}
-            type=sha,format=long,enable=${{ !cancelled() && inputs.image-tag == '' }}
+            type=raw,value=${{ inputs.image-tag }},enable=${{ inputs.image-tag != '' }}
+            type=sha,format=long,enable=${{ inputs.image-tag == '' }}
           labels: |
             ${{ inputs.image-labels }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          push: ${{ !cancelled() }}
+          push: ${{ inputs.image-upload }}
           platforms: ${{ inputs.image-platforms }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
