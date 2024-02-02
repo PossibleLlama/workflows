@@ -66,12 +66,18 @@ on:
       ghcr-token:
         required: false
         description: "GitHub Container Registry token to use for login"
+    outputs:
+      image:
+        description: "The full name of the image. Only use if image-upload is true"
+        value: ${{ jobs.create.outputs.image }}
 
 jobs:
   Create:
     name: Create container image
     runs-on: ubuntu-latest
     if: ${{ inputs.login-aws || inputs.login-ghcr }}
+    outputs:
+      image: ${{ steps.build.outputs.imageid }}
     steps:
 
       - name: Checkout code
@@ -124,6 +130,7 @@ jobs:
             ${{ inputs.image-labels }}
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@v5
         with:
           push: ${{ inputs.image-upload }}
@@ -132,3 +139,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             ${{ inputs.image-build-args }}
+          annotations: ${{ steps.meta.outputs.annotations }}
