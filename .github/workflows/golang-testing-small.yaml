@@ -117,4 +117,4 @@ jobs:
       run: go mod download
 
     - name: Fuzz tests
-      run: find . -maxdepth 3 -type d \( ! -name . \) -not -path "./.git/*" -exec bash -c "cd '{}' && go test --fuzz=. --fuzztime=10s"
+      run: find . -maxdepth 3 -type d \( ! -name . \) -not -path "./.git/*" -exec bash -c "cd '{}' && go test --fuzz=. --fuzztime=10s" \;
