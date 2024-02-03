@@ -1,0 +1,58 @@
+on:
+  workflow_call:
+    inputs:
+      collection_id:
+        required: true
+        type: string
+        description: "The collection to run"
+      environment_id:
+        required: true
+        type: string
+        description: "The environment to run"
+      retention-days:
+        required: false
+        default: 2
+        type: number
+        description: "Number of days to keep the test results in the artifact store"
+    secrets:
+      postman_pat:
+        required: true
+        description: "PAT to download the collection and environment"
+
+jobs:
+  test-medium-correctness:
+    name: Medium Tests - Correctness
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      - name: Download newman
+        run: |
+          npm i -g newman
+          curl -o postman_collection.json https://api.getpostman.com/collections/$POSTMAN_COLLECTION?apikey=$POSTMAN_PAT
+          curl -o postman_environment.json https://api.getpostman.com/environments/$POSTMAN_ENVIRONMENT?apikey=$POSTMAN_PAT
+        env:
+          POSTMAN_PAT: ${{ secrets.POSTMAN_PAT }}
+          POSTMAN_COLLECTION: ${{ inputs.collection_id }}
+          POSTMAN_ENVIRONMENT: ${{ inputs.environment_id }}
+
+      - name: User acceptance tests
+        run: |
+          newman run postman_collection.json --environment postman_environment.json --reporters junit,cli --reporter-junit-export ./correctness-tests.xml
+
+      - name: Store test reports
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: Test medium reports - Correctness
+          path: |
+            ./correctness-tests.xml
+          if-no-files-found: ignore
+          retention-days: ${{ inputs.retention-days }}
