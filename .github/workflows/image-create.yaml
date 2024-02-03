@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.login-aws || inputs.login-ghcr }}
     outputs:
-      image: ${{ steps.build.outputs.imageid }}
+      image: "${{ steps.build-aws.outputs.imageid }}${{ steps.build-ghcr.outputs.imageid }}"
     steps:
 
       - name: Checkout code
@@ -116,13 +116,27 @@ jobs:
           install: true
 
       - name: Docker meta
-        id: meta
+        id: meta-aws
         uses: docker/metadata-action@v4
+        if: ${{ !cancelled() && inputs.login-aws }}
         with:
           images: |
             inputs.image-name,enable=${{ inputs.image-name != '' }}
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.aws-registry }},enable=${{ inputs.login-aws && inputs.image-name == '' && inputs.aws-registry != '' }}
-            ghcr.io/${{ github.repository }}-${{ github.event.pull_request.head.ref }},enable=${{ inputs.login-ghcr && inputs.image-name == '' }}
+          tags: |
+            type=raw,value=${{ inputs.image-tag }},enable=${{ inputs.image-tag != '' }}
+            type=sha,format=long,enable=${{ inputs.image-tag == '' }}
+          labels: |
+            ${{ inputs.image-labels }}
+
+      - name: Docker meta
+        id: meta-ghcr
+        uses: docker/metadata-action@v4
+        if: ${{ !cancelled() && inputs.login-ghcr }}
+        with:
+          images: |
+            inputs.image-name,enable=${{ inputs.image-name != '' }}
+            ghcr.io/${{ github.repository }},enable=${{ inputs.login-ghcr && inputs.image-name == '' }}
           tags: |
             type=raw,value=${{ inputs.image-tag }},enable=${{ inputs.image-tag != '' }}
             type=sha,format=long,enable=${{ inputs.image-tag == '' }}
@@ -130,13 +144,25 @@ jobs:
             ${{ inputs.image-labels }}
 
       - name: Build and push
-        id: build
+        id: build-aws
         uses: docker/build-push-action@v5
         with:
           push: ${{ inputs.image-upload }}
           platforms: ${{ inputs.image-platforms }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-aws.outputs.tags }}
+          labels: ${{ steps.meta-aws.outputs.labels }}
           build-args: |
             ${{ inputs.image-build-args }}
-          annotations: ${{ steps.meta.outputs.annotations }}
+          annotations: ${{ steps.meta-aws.outputs.annotations }}
+
+      - name: Build and push
+        id: build-ghcr
+        uses: docker/build-push-action@v5
+        with:
+          push: ${{ inputs.image-upload }}
+          platforms: ${{ inputs.image-platforms }}
+          tags: ${{ steps.meta-ghcr.outputs.tags }}
+          labels: ${{ steps.meta-ghcr.outputs.labels }}
+          build-args: |
+            ${{ inputs.image-build-args }}
+          annotations: ${{ steps.meta-ghcr.outputs.annotations }}
