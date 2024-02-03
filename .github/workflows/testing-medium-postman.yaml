@@ -1,11 +1,11 @@
 on:
   workflow_call:
     inputs:
-      collection_id:
+      collection-id:
         required: true
         type: string
         description: "The collection to run"
-      environment_id:
+      environment-id:
         required: true
         type: string
         description: "The environment to run"
