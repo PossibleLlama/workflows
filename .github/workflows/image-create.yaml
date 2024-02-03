@@ -10,7 +10,7 @@ on:
         required: false
         default: ""
         type: string
-        description: "Tag to assign, by default it is empty. If not set, will use the commit sha"
+        description: "Tag to assign, by default it is empty. The commit sha is always used in addition to this tag"
       image-labels:
         required: false
         default: ""
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.login-aws || inputs.login-ghcr }}
     outputs:
-      image: "${{ steps.build-aws.outputs.imageid }}${{ steps.build-ghcr.outputs.imageid }}"
+      image: ${{ steps.set-output.outputs.image }}
     steps:
 
       - name: Checkout code
@@ -126,7 +126,7 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.aws-registry }},enable=${{ inputs.login-aws && inputs.image-name == '' && inputs.aws-registry != '' }}
           tags: |
             type=raw,value=${{ inputs.image-tag }},enable=${{ inputs.image-tag != '' }}
-            type=sha,format=long,enable=${{ inputs.image-tag == '' }}
+            type=sha,format=long
           labels: |
             ${{ inputs.image-labels }}
 
@@ -141,7 +141,7 @@ jobs:
             ghcr.io/${{ github.repository }},enable=${{ inputs.login-ghcr && inputs.image-name == '' }}
           tags: |
             type=raw,value=${{ inputs.image-tag }},enable=${{ inputs.image-tag != '' }}
-            type=sha,format=long,enable=${{ inputs.image-tag == '' }}
+            type=sha,format=long
           labels: |
             ${{ inputs.image-labels }}
 
@@ -170,3 +170,8 @@ jobs:
           build-args: |
             ${{ inputs.image-build-args }}
           annotations: ${{ steps.meta-ghcr.outputs.annotations }}
+
+      - name: Set output
+        id: set-output
+        if: ${{ inputs.image-upload }}
+        run: echo "image=${{ steps.build-aws.outputs.imageid }}${{ steps.build-ghcr.outputs.imageid }}" >> $GITHUB_OUTPUT
