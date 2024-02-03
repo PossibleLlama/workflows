@@ -15,7 +15,7 @@ on:
         type: number
         description: "Number of days to keep the test results in the artifact store"
     secrets:
-      postman_pat:
+      pat:
         required: true
         description: "PAT to download the collection and environment"
 
@@ -36,7 +36,7 @@ jobs:
           curl -o postman_collection.json https://api.getpostman.com/collections/$POSTMAN_COLLECTION?apikey=$POSTMAN_PAT
           curl -o postman_environment.json https://api.getpostman.com/environments/$POSTMAN_ENVIRONMENT?apikey=$POSTMAN_PAT
         env:
-          POSTMAN_PAT: ${{ secrets.POSTMAN_PAT }}
+          POSTMAN_PAT: ${{ secrets.pat }}
           POSTMAN_COLLECTION: ${{ inputs.collection_id }}
           POSTMAN_ENVIRONMENT: ${{ inputs.environment_id }}
 
