@@ -121,7 +121,7 @@ jobs:
         if: ${{ !cancelled() && inputs.login-aws }}
         with:
           images: |
-            inputs.image-name,enable=${{ inputs.image-name != '' }}
+            ${{ inputs.image-name }},enable=${{ inputs.image-name != '' }}
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.aws-registry }},enable=${{ inputs.login-aws && inputs.image-name == '' && inputs.aws-registry != '' }}
           tags: |
             type=raw,value=${{ inputs.image-tag }},enable=${{ inputs.image-tag != '' }}
@@ -135,7 +135,7 @@ jobs:
         if: ${{ !cancelled() && inputs.login-ghcr }}
         with:
           images: |
-            inputs.image-name,enable=${{ inputs.image-name != '' }}
+            ${{ inputs.image-name }},enable=${{ inputs.image-name != '' }}
             ghcr.io/${{ github.repository }},enable=${{ inputs.login-ghcr && inputs.image-name == '' }}
           tags: |
             type=raw,value=${{ inputs.image-tag }},enable=${{ inputs.image-tag != '' }}
