@@ -117,7 +117,7 @@ jobs:
 
       - name: Docker meta
         id: meta-aws
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         if: ${{ !cancelled() && inputs.login-aws }}
         with:
           images: |
@@ -131,7 +131,7 @@ jobs:
 
       - name: Docker meta
         id: meta-ghcr
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         if: ${{ !cancelled() && inputs.login-ghcr }}
         with:
           images: |
