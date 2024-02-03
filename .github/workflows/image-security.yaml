@@ -96,7 +96,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ inputs.ghcr-username }}
-          password: ${{ inputs.ghcr-token }}
+          password: ${{ secrets.ghcr-token }}
 
       - name: Scan image
         uses: aquasecurity/trivy-action@master
