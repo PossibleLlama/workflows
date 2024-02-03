@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.login-aws || inputs.login-ghcr }}
     outputs:
-      image: ${{ steps.set-output.outputs.image }}
+      image: ${{ steps.set-output-aws.outputs.image }}${{ steps.set-output-ghcr.outputs.image }}
     steps:
 
       - name: Checkout code
@@ -172,6 +172,11 @@ jobs:
           annotations: ${{ steps.meta-ghcr.outputs.annotations }}
 
       - name: Set output
-        id: set-output
-        if: ${{ inputs.image-upload }}
-        run: echo "image=${{ fromJSON(steps.meta-aws.outputs.json).tags[0] }}${{ fromJSON(steps.meta-ghcr.outputs.json).tags[0] }}" >> $GITHUB_OUTPUT
+        id: set-output-aws
+        if: ${{ !cancelled() && inputs.login-aws && inputs.image-upload }}
+        run: echo "image=${{ fromJSON(steps.meta-aws.outputs.json).tags[0] }}" >> $GITHUB_OUTPUT
+        
+      - name: Set output
+        id: set-output-ghcr
+        if: ${{ !cancelled() && inputs.login-ghcr && inputs.image-upload }}
+        run: echo "image=${{ fromJSON(steps.meta-ghcr.outputs.json).tags[0] }}" >> $GITHUB_OUTPUT
