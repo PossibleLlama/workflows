@@ -5,7 +5,12 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
-      time: "08:00"
+      interval: "weekly"
+    assignees:
+      - "possiblellama"
     labels:
       - "dependencies"
+    groups:
+      gha-deps:
+        patterns:
+          - "*"
