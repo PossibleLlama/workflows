@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      working-directory:
+        required: false
+        default: "./"
+        type: string
+        description: "Working directory to base all other paths on"
       mod-path:
         required: false
         default: "./go.mod"
@@ -41,6 +46,9 @@ jobs:
   test-small-correctness:
     name: Small Tests - Correctness
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     if: ${{ inputs.enable-correctness }}
     steps:
 
@@ -72,6 +80,9 @@ jobs:
   test-small-performance:
     name: Small Tests - Performance
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     if: ${{ inputs.enable-performance }}
     steps:
 
@@ -102,6 +113,9 @@ jobs:
   test-small-fuzz:
     name: Small Tests - Fuzz
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     if: ${{ inputs.enable-fuzz }}
     steps:
 

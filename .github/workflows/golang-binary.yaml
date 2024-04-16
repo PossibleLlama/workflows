@@ -1,6 +1,11 @@
 on:
   workflow_call:
     inputs:
+      working-directory:
+        required: false
+        default: "./"
+        type: string
+        description: "Working directory to base all other paths on"
       mod-path:
         required: false
         default: "./go.mod"
@@ -41,6 +46,9 @@ jobs:
   binary:
     name: Binary
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     steps:
 
     - name: Checkout code
