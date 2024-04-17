@@ -71,11 +71,19 @@ jobs:
         GOOS: ${{ inputs.os }}
         GOARCH: ${{ inputs.arch }}
       working-directory: ${{ inputs.working-directory }}
-  
+
+    - name: Sanitize artifact postfix
+      id: sanitize-artifact-postfix
+      uses: mad9000/actions-find-and-replace-string@5
+      with:
+          source: ${{ inputs.artifact-postfix }} 
+          find: "/"
+          replace: "-"
+
     - name: Store binaries
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.binary-prefix }}${{ inputs.os }}-${{ inputs.arch }}${{ inputs.artifact-postfix }}
+        name: ${{ inputs.binary-prefix }}${{ inputs.os }}-${{ inputs.arch }}${{ steps.sanitize-artifact-postfix.outputs.value }}
         path: ./${{ inputs.working-directory }}/${{ github.repository }}*
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
