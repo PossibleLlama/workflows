@@ -39,7 +39,7 @@ jobs:
     - name: Govulncheck
       uses: golang/govulncheck-action@v1
       with:
-        go-package: ./...
+        go-package: "./${{ inputs.working-directory }}..."
 
   SAST:
     name: SAST
