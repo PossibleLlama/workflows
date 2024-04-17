@@ -21,9 +21,6 @@ jobs:
   SCA:
     name: SCA
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ inputs.working-directory }}
     steps:
 
     - name: Checkout code
@@ -32,10 +29,11 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
-        go-version-file: ${{ inputs.mod-path }}
+        go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
 
     - name: Write Go List
       run: go list -json -m > go.list
+      working-directory: ${{ inputs.working-directory }}
 
     # TODO check on progress of https://github.com/golang/go/issues/61347
     - name: Govulncheck
@@ -46,9 +44,6 @@ jobs:
   SAST:
     name: SAST
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ inputs.working-directory }}
     steps:
 
       - name: Checkout code
@@ -57,13 +52,13 @@ jobs:
       - name: Set up Go 1.x
         uses: actions/setup-go@v5
         with:
-          go-version-file: ${{ inputs.mod-path }}
+          go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
 
       # GoSec
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
-          args: '-no-fail -fmt sarif -out gosec.sarif ./...'
+          args: '-no-fail -fmt sarif -out gosec.sarif ./${{ inputs.working-directory }}...'
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3

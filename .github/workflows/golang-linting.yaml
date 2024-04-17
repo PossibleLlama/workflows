@@ -26,9 +26,6 @@ jobs:
   linting:
     name: Linting
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ inputs.working-directory }}
     steps:
 
     - name: Checkout code
@@ -37,20 +34,22 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
-        go-version-file: ${{ inputs.mod-path }}
+        go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
 
     - name: Check formatting
       run: go fmt ${{ inputs.source-path }}
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Check vet
       run: go vet ${{ inputs.source-path }}
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Check linting
       uses: golangci/golangci-lint-action@v4
       with:
         version: latest
         skip-pkg-cache: true
-        args: --issues-exit-code=0 --out-format checkstyle -v ${{ inputs.source-path }} > ./lint.out
+        args: --issues-exit-code=0 --out-format checkstyle -v ${{ inputs.working-directory }}/${{ inputs.source-path }} > ./lint.out
 
     - name: Store linting report
       uses: actions/upload-artifact@v4

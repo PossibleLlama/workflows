@@ -46,9 +46,6 @@ jobs:
   binary:
     name: Binary
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ inputs.working-directory }}
     steps:
 
     - name: Checkout code
@@ -57,21 +54,23 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
-        go-version-file: ${{ inputs.mod-path }}
+        go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
 
     - name: Get dependencies
       run: go mod download
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Build
       run: go build ${{ inputs.build-flags }} -o "./${{ github.repository }}-${{ inputs.os }}-${{ inputs.arch }}.${{ (inputs.os == 'windows' && 'exe') || 'bin' }}" ${{ inputs.source-path }}
       env:
         GOOS: ${{ inputs.os }}
         GOARCH: ${{ inputs.arch }}
+      working-directory: ${{ inputs.working-directory }}
   
     - name: Store binaries
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.binary-prefix }}${{ inputs.os }}-${{ inputs.arch }}
-        path: ./${{ github.repository }}*
+        path: ./${{ inputs.working-directory }}/${{ github.repository }}*
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}

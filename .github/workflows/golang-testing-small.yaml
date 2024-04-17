@@ -46,9 +46,6 @@ jobs:
   test-small-correctness:
     name: Small Tests - Correctness
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ inputs.working-directory }}
     if: ${{ inputs.enable-correctness }}
     steps:
 
@@ -58,13 +55,15 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
-        go-version-file: ${{ inputs.mod-path }}
+        go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
 
     - name: Get dependencies
       run: go mod download && go install gotest.tools/gotestsum@latest
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Correctness tests
       run: gotestsum --packages=${{ inputs.test-path }} --junitfile="./correctness-tests.xml" -- -coverprofile="./correctness-tests-coverage.out" -count=${{ inputs.test-count }} -race
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Store test reports
       uses: actions/upload-artifact@v4
@@ -72,17 +71,14 @@ jobs:
       with:
         name: Test small reports - Correctness
         path: |
-          ./correctness-tests.xml
-          ./correctness-tests-coverage.out
+          ./${{ inputs.working-directory }}/correctness-tests.xml
+          ./${{ inputs.working-directory }}/correctness-tests-coverage.out
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
 
   test-small-performance:
     name: Small Tests - Performance
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ inputs.working-directory }}
     if: ${{ inputs.enable-performance }}
     steps:
 
@@ -92,30 +88,29 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
-        go-version-file: ${{ inputs.mod-path }}
+        go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
 
     - name: Get dependencies
       run: go mod download
+      working-directory: ${{ inputs.working-directory }}
 
     # TODO Add test for on PR, run performance test on HEAD and PR, and check diff
     - name: Performance tests
       run: go test -bench="." -count=${{ inputs.test-count }} ${{ inputs.test-path }} > ./performance-tests.txt
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Store test reports
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: Test small reports - Performance
-        path: ./performance-tests.txt
+        path: ./${{ inputs.working-directory }}/performance-tests.txt
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
 
   test-small-fuzz:
     name: Small Tests - Fuzz
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ inputs.working-directory }}
     if: ${{ inputs.enable-fuzz }}
     steps:
 
@@ -125,10 +120,12 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
-        go-version-file: ${{ inputs.mod-path }}
+        go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
 
     - name: Get dependencies
       run: go mod download
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Fuzz tests
       run: find . -maxdepth 3 -type d \( ! -name . \) -not -path "./.git/*" -exec bash -c "cd '{}' && go test --fuzz=. --fuzztime=10s" \;
+      working-directory: ${{ inputs.working-directory }}
