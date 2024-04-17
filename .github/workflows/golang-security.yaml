@@ -5,7 +5,7 @@ on:
         required: false
         default: "./"
         type: string
-        description: "Working directory to base all other paths on"
+        description: "Working directory to base all other paths on. Should end with a slash (/)"
       mod-path:
         required: false
         default: "./go.mod"
@@ -29,7 +29,7 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
-        go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
+        go-version-file: "${{ inputs.working-directory }}${{ inputs.mod-path }}"
 
     - name: Write Go List
       run: go list -json -m > go.list
@@ -52,7 +52,7 @@ jobs:
       - name: Set up Go 1.x
         uses: actions/setup-go@v5
         with:
-          go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
+          go-version-file: "${{ inputs.working-directory }}${{ inputs.mod-path }}"
 
       # GoSec
       - name: Run Gosec Security Scanner
