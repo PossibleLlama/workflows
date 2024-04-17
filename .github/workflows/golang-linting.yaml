@@ -5,7 +5,7 @@ on:
         required: false
         default: "./"
         type: string
-        description: "Working directory to base all other paths on"
+        description: "Working directory to base all other paths on. Should end with a slash (/)"
       mod-path:
         required: false
         default: "./go.mod"
@@ -34,7 +34,7 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v5
       with:
-        go-version-file: "${{ inputs.working-directory }}/${{ inputs.mod-path }}"
+        go-version-file: "${{ inputs.working-directory }}${{ inputs.mod-path }}"
 
     - name: Check formatting
       run: go fmt ${{ inputs.source-path }}
@@ -49,7 +49,7 @@ jobs:
       with:
         version: latest
         skip-pkg-cache: true
-        args: --issues-exit-code=0 --out-format checkstyle -v ${{ inputs.working-directory }}/${{ inputs.source-path }} > ./lint.out
+        args: --issues-exit-code=0 --out-format checkstyle -v ${{ inputs.working-directory }}${{ inputs.source-path }} > ./lint.out
 
     - name: Store linting report
       uses: actions/upload-artifact@v4
