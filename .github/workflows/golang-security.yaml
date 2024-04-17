@@ -42,6 +42,7 @@ jobs:
       with:
         go-package: "./..."
         work-dir: ${{ inputs.working-directory }}
+        go-version-file: "${{ inputs.working-directory }}${{ inputs.mod-path }}"
 
   SAST:
     name: SAST
