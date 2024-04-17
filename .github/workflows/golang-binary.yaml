@@ -60,6 +60,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version-file: "${{ inputs.working-directory }}${{ inputs.mod-path }}"
+        cache-dependency-path: "${{ inputs.working-directory }}go.sum"
 
     - name: Get dependencies
       run: go mod download
