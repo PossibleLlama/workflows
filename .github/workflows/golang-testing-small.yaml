@@ -41,6 +41,11 @@ on:
         default: 2
         type: number
         description: "Number of days to keep the test results in the artifact store"
+      artifact-postfix:
+        required: false
+        default: ""
+        type: string
+        description: "Postfix to append to the artifact name. Should start with a dash (-)"
 
 jobs:
   test-small-correctness:
@@ -69,7 +74,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: Test small reports - Correctness
+        name: Test small reports - Correctness${{ inputs.artifact-postfix }}
         path: |
           ./${{ inputs.working-directory }}/correctness-tests.xml
           ./${{ inputs.working-directory }}/correctness-tests-coverage.out
@@ -103,7 +108,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: Test small reports - Performance
+        name: Test small reports - Performance${{ inputs.artifact-postfix }}
         path: ./${{ inputs.working-directory }}/performance-tests.txt
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
