@@ -79,6 +79,7 @@ jobs:
           source: ${{ inputs.artifact-postfix }} 
           find: "/"
           replace: "-"
+          replaceAll: true
 
     - name: Store binaries
       uses: actions/upload-artifact@v4
