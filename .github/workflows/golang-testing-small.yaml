@@ -70,11 +70,19 @@ jobs:
       run: gotestsum --packages=${{ inputs.test-path }} --junitfile="./correctness-tests.xml" -- -coverprofile="./correctness-tests-coverage.out" -count=${{ inputs.test-count }} -race
       working-directory: ${{ inputs.working-directory }}
 
+    - name: Sanitize artifact postfix
+      id: sanitize-artifact-postfix
+      uses: mad9000/actions-find-and-replace-string@5
+      with:
+          source: ${{ inputs.artifact-postfix }} 
+          find: "/"
+          replace: "-"
+
     - name: Store test reports
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: Test small reports - Correctness${{ inputs.artifact-postfix }}
+        name: Test small reports - Correctness${{ steps.sanitize-artifact-postfix.outputs.value }}
         path: |
           ./${{ inputs.working-directory }}/correctness-tests.xml
           ./${{ inputs.working-directory }}/correctness-tests-coverage.out
@@ -104,11 +112,19 @@ jobs:
       run: go test -bench="." -count=${{ inputs.test-count }} ${{ inputs.test-path }} > ./performance-tests.txt
       working-directory: ${{ inputs.working-directory }}
 
+    - name: Sanitize artifact postfix
+      id: sanitize-artifact-postfix
+      uses: mad9000/actions-find-and-replace-string@5
+      with:
+          source: ${{ inputs.artifact-postfix }} 
+          find: "/"
+          replace: "-"
+
     - name: Store test reports
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: Test small reports - Performance${{ inputs.artifact-postfix }}
+        name: Test small reports - Performance${{ steps.sanitize-artifact-postfix.outputs.value }}
         path: ./${{ inputs.working-directory }}/performance-tests.txt
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
