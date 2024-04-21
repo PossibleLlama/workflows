@@ -86,6 +86,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.binary-prefix }}${{ inputs.os }}-${{ inputs.arch }}${{ steps.sanitize-artifact-postfix.outputs.value }}
-        path: ./${{ inputs.working-directory }}${{ github.repository }}*
+        path: ${{ inputs.working-directory }}${{ github.repository }}*
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}

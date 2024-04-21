@@ -86,8 +86,8 @@ jobs:
       with:
         name: Test small reports - Correctness${{ steps.sanitize-artifact-postfix.outputs.value }}
         path: |
-          ./${{ inputs.working-directory }}correctness-tests.xml
-          ./${{ inputs.working-directory }}correctness-tests-coverage.out
+          ${{ inputs.working-directory }}correctness-tests.xml
+          ${{ inputs.working-directory }}correctness-tests-coverage.out
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
 
@@ -129,7 +129,7 @@ jobs:
       if: ${{ !cancelled() }}
       with:
         name: Test small reports - Performance${{ steps.sanitize-artifact-postfix.outputs.value }}
-        path: ./${{ inputs.working-directory }}performance-tests.txt
+        path: ${{ inputs.working-directory }}performance-tests.txt
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
 
