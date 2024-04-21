@@ -1,0 +1,48 @@
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        required: false
+        default: "./"
+        type: string
+        description: "Working directory to base all other paths on. Should end with a slash (/)"
+      terraform-version:
+        required: false
+        default: "latest"
+        type: string
+        description: "Version of Terraform to use"
+      terraform-lint-version:
+        required: false
+        default: "latest"
+        type: string
+        description: "Version of tflint to use. Set to none to disable"
+
+jobs:
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+  
+    - name: Checkout code
+      uses: actions/checkout@v4
+  
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ inputs.terraform-version }}
+
+    - name: Check formatting
+      run: terraform fmt -check
+      working-directory: ${{ inputs.working-directory }}
+  
+    - name: Setup linting
+      uses: terraform-linters/setup-tflint@v4
+      if: ${{ inputs.terraform-lint-version != 'none' }}
+      with:
+        tflint_version: ${{ inputs.terraform-lint-version }}
+        github_token: ${{ github.token }}
+
+    - name: Check linting
+      if: ${{ inputs.terraform-lint-version != 'none' }}
+      run: tflint -f compact
+      working-directory: ${{ inputs.working-directory }}
