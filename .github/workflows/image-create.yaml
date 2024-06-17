@@ -147,7 +147,7 @@ jobs:
 
       - name: Build and push
         id: build-aws
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         if: ${{ !cancelled() && inputs.login-aws }}
         with:
           push: ${{ inputs.image-upload }}
@@ -160,7 +160,7 @@ jobs:
 
       - name: Build and push
         id: build-ghcr
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         if: ${{ !cancelled() && inputs.login-ghcr }}
         with:
           push: ${{ inputs.image-upload }}
