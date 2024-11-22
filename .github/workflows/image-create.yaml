@@ -31,6 +31,11 @@ on:
         default: false
         type: boolean
         description: "Push the image to the registry, by default it is false"
+      working-directory:
+        required: false
+        default: "."
+        type: string
+        description: "The directory with the Dockerfile, by default the root directory"
       login-aws:
         required: false
         default: false
@@ -150,6 +155,7 @@ jobs:
         uses: docker/build-push-action@v6
         if: ${{ !cancelled() && inputs.login-aws }}
         with:
+          context: ${{ inputs.working-directory }}
           push: ${{ inputs.image-upload }}
           platforms: ${{ inputs.image-platforms }}
           tags: ${{ steps.meta-aws.outputs.tags }}
@@ -163,6 +169,7 @@ jobs:
         uses: docker/build-push-action@v6
         if: ${{ !cancelled() && inputs.login-ghcr }}
         with:
+          context: ${{ inputs.working-directory }}
           push: ${{ inputs.image-upload }}
           platforms: ${{ inputs.image-platforms }}
           tags: ${{ steps.meta-ghcr.outputs.tags }}
