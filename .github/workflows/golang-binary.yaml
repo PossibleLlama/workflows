@@ -96,6 +96,7 @@ jobs:
         retention-days: ${{ inputs.retention-days }}
 
     - name: Generate artifact attestation
+      if: ${{ !cancelled() && inputs.attestation }}
       uses: actions/attest-build-provenance@v2
       with:
         subject-path: ${{ inputs.working-directory }}${{ github.repository }}*
