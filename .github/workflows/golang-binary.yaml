@@ -36,6 +36,11 @@ on:
         default: "amd64"
         type: string
         description: "Target architecture"
+      attestation:
+        required: false
+        default: false
+        type: boolean
+        description: "Run artifact attestation against the built binary. Requires additional permissions mentioned (here)[https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations/using-artifact-attestations-and-reusable-workflows-to-achieve-slsa-v1-build-level-3#building-with-artifact-attestations]"
       binary-prefix:
         required: false
         default: "Binaries-"
@@ -89,3 +94,8 @@ jobs:
         path: ${{ inputs.working-directory }}${{ github.repository }}*
         if-no-files-found: ignore
         retention-days: ${{ inputs.retention-days }}
+
+    - name: Generate artifact attestation
+      uses: actions/attest-build-provenance@v2
+      with:
+        subject-path: ${{ inputs.working-directory }}${{ github.repository }}*
