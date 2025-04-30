@@ -36,6 +36,11 @@ on:
         default: "amd64"
         type: string
         description: "Target architecture"
+      cgo_enabled:
+        required: false
+        default: 0
+        type: number
+        description: "Set to 0 to prevent reliances on c code"
       attestation:
         required: false
         default: false
@@ -76,6 +81,7 @@ jobs:
       env:
         GOOS: ${{ inputs.os }}
         GOARCH: ${{ inputs.arch }}
+        CGO_ENABLED: ${{ inputs.cgo_enabled }}
       working-directory: ${{ inputs.working-directory }}
 
     - name: Sanitize artifact postfix
