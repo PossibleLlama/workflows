@@ -50,7 +50,7 @@ jobs:
       with:
         version: latest
         skip-pkg-cache: true
-        args: --issues-exit-code=0 --out-format checkstyle -v ${{ inputs.working-directory }}${{ inputs.source-path }} > ./lint.out
+        args: --output.checkstyle.path=lint.out -v ${{ inputs.working-directory }}${{ inputs.source-path }}
 
     - name: Store linting report
       uses: actions/upload-artifact@v4
