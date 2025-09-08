@@ -67,7 +67,7 @@ jobs:
       uses: actions/checkout@v5
 
     - name: Set up Go 1.x
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v6
       with:
         go-version-file: "${{ inputs.working-directory }}${{ inputs.mod-path }}"
         cache-dependency-path: "${{ inputs.working-directory }}go.sum"
@@ -103,6 +103,6 @@ jobs:
 
     - name: Generate artifact attestation
       if: ${{ !cancelled() && inputs.attestation }}
-      uses: actions/attest-build-provenance@v2
+      uses: actions/attest-build-provenance@v3
       with:
         subject-path: ${{ inputs.working-directory }}${{ github.repository }}*
