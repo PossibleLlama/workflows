@@ -13,9 +13,14 @@ on:
         description: "Path to the go.mod file, by default it is assumed to be in the root of the repository"
       source-path:
         required: false
-        default: "./main.go"
+        default: "./..."
         type: string
-        description: "Path to the source file containing the main function, by default it is assumed to be in the root of the repository"
+        description: "Path to lint, by default all packages in the working directory"
+      linter-args:
+        required: false
+        default: "--out-format=checkstyle:lint.out -v"
+        type: string
+        description: "Arguments to pass to golangci-lint"
       retention-days:
         required: false
         default: 2
@@ -50,7 +55,8 @@ jobs:
       with:
         version: latest
         skip-pkg-cache: true
-        args: --output.checkstyle.path=lint.out -v ${{ inputs.working-directory }}${{ inputs.source-path }}
+        working-directory: ${{ inputs.working-directory }}
+        args: ${{ inputs.linter-args }} ${{ inputs.source-path }}
 
     - name: Store linting report
       uses: actions/upload-artifact@v4
