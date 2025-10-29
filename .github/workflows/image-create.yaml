@@ -61,16 +61,7 @@ on:
         default: ""
         type: string
         description: "GitHub Container Registry username to use for login"
-    secrets:
-      aws-access-key-id:
-        required: false
-        description: "AWS access key ID to use for ECR login"
-      aws-secret-access-key:
-        required: false
-        description: "AWS secret access key to use for ECR login"
-      ghcr-token:
-        required: false
-        description: "GitHub Container Registry token to use for login"
+    secrets: inherit
     outputs:
       image:
         description: "The full name of the image. Only use if image-upload is true"
