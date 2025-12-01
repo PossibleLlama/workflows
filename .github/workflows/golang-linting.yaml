@@ -18,7 +18,7 @@ on:
         description: "Path to lint, by default all packages in the working directory"
       linter-args:
         required: false
-        default: "--out-format=checkstyle:lint.out -v"
+        default: ""
         type: string
         description: "Arguments to pass to golangci-lint"
       retention-days:
