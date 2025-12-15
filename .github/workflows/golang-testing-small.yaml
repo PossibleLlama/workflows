@@ -81,7 +81,7 @@ jobs:
           replaceAll: true
 
     - name: Store test reports
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:
         name: Test small reports - Correctness${{ steps.sanitize-artifact-postfix.outputs.value }}
@@ -125,7 +125,7 @@ jobs:
           replaceAll: true
 
     - name: Store test reports
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:
         name: Test small reports - Performance${{ steps.sanitize-artifact-postfix.outputs.value }}

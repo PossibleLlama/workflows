@@ -94,7 +94,7 @@ jobs:
           replaceAll: true
 
     - name: Store binaries
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ inputs.binary-prefix }}${{ inputs.os }}-${{ inputs.arch }}${{ steps.sanitize-artifact-postfix.outputs.value }}
         path: ${{ inputs.working-directory }}${{ github.repository }}*
