@@ -59,7 +59,7 @@ jobs:
         args: ${{ inputs.linter-args }} ${{ inputs.source-path }}
 
     - name: Store linting report
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:
         name: Linting report

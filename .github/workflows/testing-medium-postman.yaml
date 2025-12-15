@@ -45,7 +45,7 @@ jobs:
           newman run postman_collection.json --environment postman_environment.json --reporters junit,cli --reporter-junit-export ./correctness-tests.xml
 
       - name: Store test reports
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
           name: Test medium reports - Correctness
