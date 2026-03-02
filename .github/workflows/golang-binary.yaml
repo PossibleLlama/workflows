@@ -94,7 +94,7 @@ jobs:
           replaceAll: true
 
     - name: Store binaries
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.binary-prefix }}${{ inputs.os }}-${{ inputs.arch }}${{ steps.sanitize-artifact-postfix.outputs.value }}
         path: ${{ inputs.working-directory }}${{ github.repository }}*
@@ -103,6 +103,6 @@ jobs:
 
     - name: Generate artifact attestation
       if: ${{ !cancelled() && inputs.attestation }}
-      uses: actions/attest-build-provenance@v3
+      uses: actions/attest-build-provenance@v4
       with:
         subject-path: ${{ inputs.working-directory }}${{ github.repository }}*
