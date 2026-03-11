@@ -107,13 +107,13 @@ jobs:
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         with:
           install: true
 
       - name: Docker meta
         id: meta-aws
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         if: ${{ !cancelled() && inputs.login-aws }}
         with:
           images: |
@@ -128,7 +128,7 @@ jobs:
 
       - name: Docker meta
         id: meta-ghcr
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         if: ${{ !cancelled() && inputs.login-ghcr }}
         with:
           images: |
@@ -143,7 +143,7 @@ jobs:
 
       - name: Build and push
         id: build-aws
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         if: ${{ !cancelled() && inputs.login-aws }}
         with:
           context: ${{ inputs.working-directory }}
@@ -157,7 +157,7 @@ jobs:
 
       - name: Build and push
         id: build-ghcr
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         if: ${{ !cancelled() && inputs.login-ghcr }}
         with:
           context: ${{ inputs.working-directory }}
